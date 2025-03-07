@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Disease Prediction</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 40px;
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            color: #333;
+            text-align: center;
+        }
+        h2 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+        form {
+            display: inline-block;
+            text-align: left;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        label {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        input {
+            margin-bottom: 15px;
+            padding: 10px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #218838;
+        }
+        #resultPopup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border: 2px solid black;
+            box-shadow: 0px 0px 10px gray;
+            border-radius: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Heart Disease Prediction</h2>
+    <p>Analyzing risk factors to forecast the likelihood of developing heart conditions.</p>
+    <form id="predictionForm">
+        <label for="age">Age (29-77 years):</label><input type="number" name="age" required><br>
+        <label for="sex">Sex (1=Male, 0=Female):</label><input type="number" name="sex" required><br>
+        
+        <label for="cp">CP (Chest Pain Type 0 = Typical Angina, 1 = Atypical Angina, 2 = Non-anginal Pain, 3 = Asymptomatic):</label>
+        <input type="number" name="cp" required><br>
+        
+        <label for="trestbps">Trestbps (Resting Blood Pressure, 94-200 mm Hg):</label><input type="number" name="trestbps" required><br>
+        
+        <label for="chol">Chol (Cholesterol, 126-564 mg/dl):</label><input type="number" name="chol" required><br>
+        
+        <label for="fbs">Fbs (Fasting Blood Sugar > 120 mg/dl, 1=True, 0=False):</label><input type="number" name="fbs" required><br>
+        
+        <label for="restecg">Restecg (Resting ECG Results 0 = Normal, 1 = ST-T Wave Abnormality, 2 = Left Ventricular Hypertrophy):</label>
+        <input type="number" name="restecg" required><br>
+        
+        <label for="thalach">Thalach (Max Heart Rate Achieved, 71-202 bpm):</label><input type="number" name="thalach" required><br>
+        
+        <label for="exang">Exang (Exercise-Induced Angina, 1=Yes, 0=No):</label><input type="number" name="exang" required><br>
+        
+        <label for="oldpeak">Oldpeak (ST Depression Induced by Exercise, 1 or 2):</label><input type="number" name="oldpeak" required><br>
+        
+        <label for="slope">Slope (Slope of Peak Exercise ST Segment 0 = Upsloping, 1 = Flat, 2 = Downsloping):</label>
+        <input type="number" name="slope" required><br>
+        
+        <label for="ca">Ca (Number of Major Vessels Colored by Fluoroscopy, 0-4):</label><input type="number" name="ca" required><br>
+        
+        <label for="thal">Thal (Thalassemia Type 0 = Normal, 1 = Fixed Defect, 2 = Reversible Defect):</label>
+        <input type="number" name="thal" required><br>
+
+        <button type="submit">Predict</button>
+    </form>
+
+    <div id="resultPopup"></div>
+
+    <script>
+        $(document).ready(function() {
+            $("#predictionForm").submit(function(event) {
+                event.preventDefault();
+
+                $.ajax({
+                    url: "/predict",
+                    type: "POST",
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        if (response.error) {
+                            alert("Error: " + response.error);
+                        } else {
+                            $("#resultPopup").text(response.result);
+                            $("#resultPopup").css({
+                                "display": "block",
+                                "background": response.result.includes("High") ? "red" : "green",
+                                "color": "white",
+                                "padding": "20px",
+                                "border-radius": "8px"
+                            });
+
+                            setTimeout(function() {
+                                $("#resultPopup").fadeOut();
+                            }, 5000);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
